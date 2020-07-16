@@ -1,0 +1,6 @@
+#!/bin/sh
+
+CWD=$PWD
+cd /opt/mattermost/
+/opt/mattermost/bin/mattermost --config /etc/mattermost.json "$@"
+cd $CWD

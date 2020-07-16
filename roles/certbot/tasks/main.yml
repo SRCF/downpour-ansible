@@ -1,0 +1,23 @@
+---
+- name: Install nginx and certbot
+  apt:
+    package:
+      - nginx
+      - certbot
+      - python3-certbot-nginx
+    update_cache: true
+    state: present
+
+- name: Open firewall
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: tcp
+  loop:
+    - http
+    - https
+
+- name: Run certbot
+  command: certbot --agree-tos -n --nginx -d {{ domain }} -m {{ certbot_email }} certonly
+  register: certbot
+  changed_when: '"no action taken" not in certbot.stdout'

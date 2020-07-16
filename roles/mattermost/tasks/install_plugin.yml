@@ -1,0 +1,20 @@
+- name: "Download {{ plugin_name }} plugin"
+  get_url:
+    url: "{{ plugin_url }}"
+    dest: "/opt/{{ plugin_name }}-{{ plugin_version }}.tar.gz"
+    checksum: "{{ plugin_checksum }}"
+
+- name: "Unpack {{ plugin_name }} plugin"
+  unarchive:
+    src: "/opt/{{ plugin_name }}-{{ plugin_version }}.tar.gz"
+    dest: /opt/mattermost/plugins
+    owner: mattermost
+    group: mattermost
+    remote_src: true
+  register: plugin_unpack
+
+- name: "Enable {{ plugin_name }} plugin"
+  become_user: mattermost
+  command: "mattermost plugin enable {{ plugin_name }}"
+  when: plugin_unpack.changed
+  notify: restart mattermost

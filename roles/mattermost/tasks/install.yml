@@ -1,0 +1,58 @@
+---
+- name: Install mattermost command
+  copy:
+    src: mattermost
+    dest: /usr/local/bin/
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Download mattermost
+  get_url:
+    url: "https://releases.mattermost.com/{{ mattermost_version }}/mattermost-team-{{ mattermost_version }}-linux-amd64.tar.gz"
+    dest: "/opt/mattermost-team-{{ mattermost_version }}-linux-amd64.tar.gz"
+    checksum: "{{ mattermost_checksum }}"
+  register: mm_download
+
+- name: Stop mattermost if upgradaing
+  systemd:
+    name: mattermost
+    state: stopped
+  ignore_errors: yes # If installing for the first time, this will fail.
+  when: mm_download.changed
+  notify: restart mattermost
+
+- name: Delete existing mattermost
+  file:
+    path: "/opt/mattermost"
+    state: absent
+  when: mm_download.changed
+  notify: restart mattermost
+
+- name: Unpack mattermost
+  unarchive:
+    src: "/opt/mattermost-team-{{ mattermost_version }}-linux-amd64.tar.gz"
+    dest: /opt/
+    owner: mattermost
+    group: mattermost
+    remote_src: true
+  when: mm_download.changed
+  notify: restart mattermost
+
+- name: Copy mattermost configuration
+  template:
+    src: mattermost-config.json
+    dest: /etc/mattermost.json
+    owner: mattermost
+    group: mattermost
+    mode: 0600
+  notify: restart mattermost
+
+- name: Install lua library
+  copy:
+    src: lua/
+    dest: /usr/local/share/lua/5.1/
+    owner: root
+    group: root
+    mode: 644
+  notify: reload nginx

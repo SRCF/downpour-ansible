@@ -1,0 +1,21 @@
+---
+- name: Create plugins directory
+  file:
+    path: /opt/mattermost/plugins/
+    owner: mattermost
+    group: mattermost
+    state: directory
+
+- import_tasks: install_plugin.yml
+  vars:
+    - plugin_name: "bigbluebutton"
+    - plugin_url: "https://github.com/blindsidenetworks/mattermost-plugin-bigbluebutton/releases/download/v{{ mattermost_bbb_plugin_version }}/bigbluebutton_linux_amd64.tar.gz"
+    - plugin_version: "{{ mattermost_bbb_plugin_version }}"
+    - plugin_checksum: "{{ mattermost_bbb_plugin_checksum }}"
+
+- import_tasks: install_plugin.yml
+  vars:
+    - plugin_name: "srcf.redact"
+    - plugin_url: "https://github.com/SRCF/mattermost-plugin-redact/releases/download/1.0.0/srcf.redact-1.0.0-linux-amd64.tar.gz"
+    - plugin_version: "1.0.0"
+    - plugin_checksum: sha256:da9a77eaa2dfa61421a18e4cc74227f703235295f75bf775d6bb2fac48d86caf

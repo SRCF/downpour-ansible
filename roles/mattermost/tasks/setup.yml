@@ -1,0 +1,39 @@
+---
+- name: Install dependencies
+  apt:
+    package:
+      - nginx-extras
+      - postgresql
+      - postgresql-contrib
+      - python3-psycopg2 # Used by ansible
+    update_cache: true
+
+- name: Create postgres user
+  become_user: postgres
+  postgresql_user:
+    name: mattermost
+
+- name: Create postgres database
+  become_user: postgres
+  postgresql_db:
+    name: mattermost
+
+- name: Enable postgres
+  systemd:
+    enabled: true
+    state: started
+    name: postgresql
+
+- name: Create mattermost user
+  user:
+    name: mattermost
+    create_home: false
+    system: true
+
+- name: Create mattermost data directory
+  file:
+    path: /mnt/mattermost/
+    owner: mattermost
+    group: mattermost
+    mode: 0775
+    state: directory

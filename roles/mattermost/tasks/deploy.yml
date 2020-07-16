@@ -1,0 +1,42 @@
+---
+- name: Copy mattermost systemd config
+  copy:
+    src: mattermost.service
+    dest: /etc/systemd/system/
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart mattermost
+
+- name: Enable mattermost
+  systemd:
+    enabled: true
+    state: started
+    name: mattermost
+
+- name: Check if admin token exists
+  stat:
+    path: /etc/mattermost-admin-token
+  register: admin_token
+
+- name: Create internal admin access token
+  script: get_access_token.py admin "{{ mattermost_admin_password }}"
+  when: not admin_token.stat.exists
+
+- name: Copy mattermost nginx config
+  template:
+    src: mattermost.conf
+    dest: /etc/nginx/sites-available/mattermost.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: reload nginx
+
+- name: Enable mattermost nginx config
+  file:
+    src: /etc/nginx/sites-available/mattermost.conf
+    dest: /etc/nginx/sites-enabled/mattermost.conf
+    owner: root
+    group: root
+    state: link
+  notify: reload nginx
