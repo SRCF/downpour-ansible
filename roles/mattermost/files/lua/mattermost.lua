@@ -1,7 +1,5 @@
-json = require "json"
-http = require "resty.http"
-
-captured = nil
+local json = require "json"
+local http = require "resty.http"
 
 local function get_body()
     ngx.req.read_body()
@@ -36,8 +34,8 @@ local function match(pattern, method)
     if ngx.var.request_method ~= method then
         return false
     end
-    capture = string.match(ngx.var.uri, "^/api/v4" .. pattern .. "$")
-    return capture ~= nil
+    ngx.ctx.capture = string.match(ngx.var.uri, "^/api/v4" .. pattern .. "$")
+    return ngx.ctx.capture ~= nil
 end
 
 local function ret_error(id, message, status)
@@ -99,7 +97,7 @@ elseif match("/channels", "POST") then
 elseif match("/channels/([a-z0-9]*)", "DELETE") or
     match("/channels/([a-z0-9]*)", "PUT") or
     match("/channels/([a-z0-9]*)/patch", "PUT") then
-    local team_id = get_mm("/channels/" .. capture)["team_id"]
+    local team_id = get_mm("/channels/" .. ngx.ctx.capture)["team_id"]
     local perms = get_mm("/teams/" .. team_id .. "/members/" ..  ngx.var.cookie_MMUSERID)
     if not perms["scheme_admin"] then
         ret_error("api.context.permission.app_error",
