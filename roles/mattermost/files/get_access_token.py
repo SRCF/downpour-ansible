@@ -5,16 +5,17 @@ import urllib.request
 import urllib.parse
 import sys
 import json
+import requests
 
 PREFIX = "http://localhost:8065/api/v4"
 
 def request(endpoint, data, tok=None):
-    req = urllib.request.Request(PREFIX + endpoint, data=json.dumps(data).encode("utf-8"))
-    req.add_header("Content-Type", "application/json")
+    headers = {}
     if tok is not None:
-        req.add_header("Authorization", "Bearer " + tok)
-    response = urllib.request.urlopen(req)
-    return (json.loads(response.read().decode("utf-8")), response.info())
+        headers["Authorization"] = "Bearer " + tok
+
+    r = requests.post(PREFIX + endpoint, json=data, headers=headers)
+    return (r.json(), r.headers)
 
 login, headers = request("/users/login", {
     "login_id": sys.argv[1],

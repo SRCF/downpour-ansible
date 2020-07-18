@@ -6,6 +6,7 @@
       - postgresql
       - postgresql-contrib
       - python3-psycopg2 # Used by ansible
+      - python3-requests # Used by get_access_token
     update_cache: true
 
 - name: Create postgres user
