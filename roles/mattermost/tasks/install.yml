@@ -7,6 +7,14 @@
     group: root
     mode: 0755
 
+- name: Install mattermost_client library
+  copy:
+    src: mattermost_client.py
+    dest: /usr/local/lib/python3.8/dist-packages/
+    owner: root
+    group: root
+    mode: 0644
+
 - name: Download mattermost
   get_url:
     url: "https://releases.mattermost.com/{{ mattermost_version }}/mattermost-team-{{ mattermost_version }}-linux-amd64.tar.gz"
