@@ -1,11 +1,11 @@
 ---
 - name: Mattermost
-  hosts: downpour
+  hosts: all
   become: yes
   tags:
     - mattermost
   vars:
-    - domain: mattermost.srcf.net
+    - domain: "{{ mattermost_domain }}"
     - certbot_email: soc-srcf-admin@lists.cam.ac.uk
     - mattermost_version: 5.25.0
     - mattermost_checksum: sha256:4d8053508108a2f2d33a4bfaadb821f34c20694905b14ab747a08f91fb17f801
@@ -31,16 +31,16 @@
           38363966373865656530
 
   roles:
-#    - certbot
+    - certbot
     - mattermost
 
 - name: Matrix bridges
-  hosts: downpour
+  hosts: all
   become: yes
   tags:
     - matrix
   vars:
-    - domain: matrix.srcf.net
+    - domain: "{{ matrix_domain }}"
     - certbot_email: soc-srcf-admin@lists.cam.ac.uk
     - ubuntu_version: focal
     - keyring_location: /usr/share/keyrings/matrix-org-archive-keyring.gpg
