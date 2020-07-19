@@ -67,7 +67,7 @@ ircService:
       # Configuration for virtual IRC users.
       ircClients:
         nickTemplate: "$DISPLAY"
-        allowNickChanges: false
+        allowNickChanges: true
         maxClients: 100
         lineLimit: 5
 
