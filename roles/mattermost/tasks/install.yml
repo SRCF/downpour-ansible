@@ -8,12 +8,8 @@
     mode: 0755
 
 - name: Install mattermost_client library
-  copy:
-    src: mattermost_client.py
-    dest: /usr/local/lib/python3.8/dist-packages/
-    owner: root
-    group: root
-    mode: 0644
+  pip:
+    name: mattermostdriver==7.0.1
 
 - name: Download mattermost
   get_url:

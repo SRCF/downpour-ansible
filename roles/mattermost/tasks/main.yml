@@ -1,8 +1,8 @@
 ---
 
-- import_tasks: setup.yml
-- import_tasks: install.yml
-- import_tasks: plugins.yml
-- import_tasks: admin.yml
+#- import_tasks: setup.yml
+#- import_tasks: install.yml
+#- import_tasks: plugins.yml
+#- import_tasks: admin.yml
 - import_tasks: deploy.yml
 

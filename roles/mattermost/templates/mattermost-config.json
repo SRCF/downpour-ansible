@@ -85,7 +85,7 @@
         "ExperimentalStrictCSRFEnforcement": false,
         "EnableEmailInvitations": true,
         "DisableBotsWhenOwnerIsDeactivated": true,
-        "EnableBotAccountCreation": false,
+        "EnableBotAccountCreation": true,
         "EnableSVGs": true,
         "EnableLatex": true,
         "EnableLocalMode": false,

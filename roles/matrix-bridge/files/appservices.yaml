@@ -1,0 +1,3 @@
+app_service_config_files:
+  - /home/matrix-irc/registration.yaml
+  - /home/matrix-mattermost/registration.yaml

@@ -1,0 +1,53 @@
+public_baseurl: https://{{ domain }}
+
+pid_file: "/var/run/matrix-synapse.pid"
+
+use_presence: false
+enable_search: false
+require_auth_for_profile_requests: true
+
+# Disable federation
+federation_domain_whitelist:
+federation_ip_range_blacklist:
+  - '0.0.0.0/0'
+  - '::/0'
+
+listeners:
+  - port: 8008
+    tls: false
+    type: http
+    x_forwarded: true
+    bind_addresses: ['::1', '127.0.0.1']
+
+    resources:
+      - names: [client]
+        compress: false
+
+retention:
+  enabled: true
+  default_policy:
+    min_lifetime: 4w
+    max_lifetime: 4w
+  allowed_lifetime_min: 1m
+  allowed_lifetime_max: 1m
+
+
+database:
+  name: psycopg2
+  args:
+    user: matrix-synapse
+    database: matrix-synapse
+    host: /var/run/postgresql
+    cp_min: 5
+    cp_max: 10
+
+log_config: "/etc/matrix-synapse/log.yaml"
+media_store_path: "/mnt/matrix-synapse/media"
+enable_registration: false
+
+registration_shared_secret: {{ matrix_registration_secret }}
+default_identity_server: https://{{ domain }}
+
+signing_key_path: "/etc/matrix-synapse/homeserver.signing.key"
+trusted_key_servers:
+  - server_name: "{{ domain }}"

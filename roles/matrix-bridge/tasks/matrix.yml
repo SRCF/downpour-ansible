@@ -1,0 +1,122 @@
+- name: Add matrix key
+  apt_key:
+    url: https://packages.matrix.org/debian/matrix-org-archive-keyring.gpg
+    keyring: "{{ keyring_location }}"
+    state: present
+
+- name: Add matrix repository
+  apt_repository:
+    repo: "deb [signed-by={{ keyring_location }}] https://matrix.org/packages/debian/ {{ ubuntu_version }} main"
+    state: present
+    filename: matrix-org
+
+- name: Install matrix
+  apt:
+    package:
+      - matrix-synapse
+      - nginx
+      - postgresql
+      - python3-pip
+      - python3-psycopg2
+      - python3-requests
+      - nodejs # irc bridge
+      - npm
+  notify: restart matrix
+
+- name: Install matrix python sdk
+  pip:
+    name: matrix_client==0.3.2
+
+- name: Create matrix postgres user
+  become_user: postgres
+  postgresql_user:
+    name: matrix-synapse
+
+- name: Create matrix postgres database
+  become_user: postgres
+  postgresql_db:
+    name: matrix-synapse
+    lc_ctype: C
+    lc_collate: C
+    template: template0
+    encoding: UTF8
+
+- name: Install matrix config
+  template:
+    src: homeserver.yaml
+    dest: /etc/matrix-synapse/
+    owner: root
+    group: root
+    mode: '0644'
+  register: config
+
+- name: Install matrix server_name config
+  template:
+    src: server_name.yaml
+    dest: /etc/matrix-synapse/conf.d/
+    owner: root
+    group: root
+    mode: '0644'
+  register: server_name
+
+- name: Restart matrix if config files changed
+  systemd:
+    name: matrix-synapse
+    state: restarted
+  when: config.changed or server_name.changed
+
+- name: Install matrix logging config
+  copy:
+    src: log.yaml
+    dest: /etc/matrix-synapse/
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart matrix
+
+- name: Create matrix data directory
+  file:
+    path: /mnt/matrix-synapse/
+    owner: matrix-synapse
+    mode: 0755
+    state: directory
+
+- name: Start matrix
+  systemd:
+    enabled: true
+    state: started
+    name: matrix-synapse
+
+- name: Create botmaster user
+  matrix_user:
+    username: botmaster
+    password: "{{ matrix_botmaster_password }}"
+    shared_secret: "{{ matrix_registration_secret }}"
+
+  #  script: "matrix-commands.py ensure_user botmaster '{{ matrix_botmaster_password }}' '{{ matrix_registration_secret }}'"
+  #  register: create_botmaster
+  #  changed_when: '"Changed" in create_botmaster.stdout'
+
+- name: Save botmaster password
+  copy:
+    dest: /root/matrix-botmaster-password
+    content: "{{ matrix_botmaster_password }}\n"
+
+- name: Copy matrix nginx config
+  template:
+    src: matrix-synapse.conf
+    dest: /etc/nginx/sites-available/matrix-synapse.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: reload nginx
+
+- name: Enable matrix nginx config
+  file:
+    src: /etc/nginx/sites-available/matrix-synapse.conf
+    dest: /etc/nginx/sites-enabled/matrix-synapse.conf
+    owner: root
+    group: root
+    state: link
+  notify: reload nginx
+

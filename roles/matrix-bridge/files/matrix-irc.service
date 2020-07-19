@@ -1,0 +1,13 @@
+[Unit]
+Description=matrix-irc bridge
+After=network.target
+
+[Service]
+User=matrix-irc
+Group=matrix-irc
+ExecStart=/usr/bin/node /home/matrix-irc/matrix-appservice-irc/app.js -f /home/matrix-irc/registration.yaml -c /home/matrix-irc/config.yaml
+KillMode=mixed
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

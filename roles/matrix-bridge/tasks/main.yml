@@ -1,0 +1,13 @@
+---
+
+- import_tasks: matrix.yml
+- import_tasks: matrix-irc.yml
+- import_tasks: matrix-mattermost.yml
+- name: Enable appservices
+  copy:
+    src: appservices.yaml
+    dest: /etc/matrix-synapse/conf.d/
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart matrix

@@ -4,6 +4,7 @@ Downpour is an SRCF virtual machine running various "webapps". This repository
 contains ansible config that sets up these webapps. Currently, this includes
 
  - Mattermost
+ - Matrix bridge
 
 ## Overview
 

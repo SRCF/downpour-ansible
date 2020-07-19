@@ -1,0 +1,14 @@
+[Unit]
+Description=matrix-mattermost bridge
+After=network.target
+
+[Service]
+User=matrix-mattermost
+Group=matrix-mattermost
+WorkingDirectory=/home/matrix-mattermost/matrix-appservice-slack
+ExecStart=/usr/bin/npm start -- -c /home/matrix-mattermost/config.yaml -f /home/matrix-mattermost/registration.yaml
+KillMode=mixed
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

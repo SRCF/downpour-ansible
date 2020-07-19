@@ -1,0 +1,77 @@
+- name: Create matrix-irc user
+  user:
+    name: matrix-irc
+    system: true
+
+- name: Create matrix-irc postgres user
+  become_user: postgres
+  postgresql_user:
+    name: matrix-irc
+
+- name: Create matrix-irc postgres database
+  become_user: postgres
+  postgresql_db:
+    name: matrix-irc
+
+- name: Clone matrix-appservice-irc
+  become_user: matrix-irc
+  git:
+    repo: 'https://github.com/matrix-org/matrix-appservice-irc'
+    dest: /home/matrix-irc/matrix-appservice-irc/
+    version: 338d2d2fcc1da761f8c64507ee50ddfd2810cd2c # 0.18.0. Newer version require node 12
+  register: install_matrix_irc
+  notify: restart matrix-irc
+
+- name: Build matrix-appservice-irc
+  become_user: matrix-irc
+  command:
+    cmd: npm install
+    chdir: /home/matrix-irc/matrix-appservice-irc
+  when: install_matrix_irc.changed
+
+- name: Create bridged rooms and find room ids
+  become_user: matrix-irc
+  matrix_room:
+    username: botmaster
+    password: "{{ matrix_botmaster_password }}"
+    room_alias: "{{ item.matrix }}"
+    join_rule: "invite"
+    invites:
+      - "@appservice-irc:{{ domain }}"
+    power_levels:
+      - ["@appservice-irc:{{ domain }}", 100]
+  register: "matrix_irc_room_ids"
+  loop: "{{ matrix_irc_bridges }}"
+
+- name: Install matrix-appservice-irc config file
+  become_user: matrix-irc
+  template:
+    src: matrix-irc-config.yaml
+    dest: /home/matrix-irc/config.yaml
+    owner: matrix-irc
+    group: matrix-irc
+    mode: 0644
+  register: config_matrix_irc
+  notify: restart matrix-irc
+
+- name: Create registration.yaml
+  become_user: matrix-irc
+  command:
+    cmd: node matrix-appservice-irc/app.js -r -f registration.yaml -u "http://localhost:{{ matrix_irc_port }}" -c config.yaml
+    chdir: /home/matrix-irc/
+  when: config_matrix_irc.changed
+  notify: restart matrix
+
+- name: Copy matrix-irc systemd config
+  copy:
+    src: matrix-irc.service
+    dest: /etc/systemd/system/
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart matrix-irc
+
+- name: Enable matrix-irc
+  systemd:
+    enabled: true
+    name: matrix-irc

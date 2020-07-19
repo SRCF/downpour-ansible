@@ -1,0 +1,92 @@
+homeserver:
+  url: "https://{{ domain }}"
+  domain: "{{ domain }}"
+
+  enablePresence: false
+  bindPort: {{ matrix_irc_port }}
+
+ircService:
+  servers:
+    flood.srcf.net:
+      name: "SRCF"
+
+      additionalAddresses: [ "drought.srcf.net", "puddle.srcf.net" ]
+
+      port: 6697
+      ssl: true
+      sslselfsign: false
+      sasl: false
+      allowExpiredCerts: false
+      sendConnectionMessages: true
+
+      modePowerMap:
+        o: 50
+        v: 1
+
+      botConfig:
+        enabled: true
+        nick: "matrixbot"
+        joinChannelsIfNoUsers: true
+
+      privateMessages:
+        enabled: true
+        federate: false
+
+      excludedUsers:
+        - regex: "@slackbot:{{ domain }}"
+          kickReason: "We don't welcome bots"
+        - regex: "@botmaster:{{ domain }}"
+          kickReason: "We don't welcome bots"
+
+      membershipLists:
+        enabled: true
+        floodDelayMs: 10000
+
+        global:
+          ircToMatrix:
+            initial: true
+            incremental: true
+
+          matrixToIrc:
+            initial: true
+            incremental: true
+
+      mappings:
+        {% for entry in matrix_irc_room_ids.results %}
+
+        "{{ entry.item.irc }}":
+          roomIds: ["{{ entry.meta.room_id }}"]
+
+        {% endfor %}
+
+      # Configuration for virtual matrix users.
+      matrixClients:
+        userTemplate: "@irc_$NICK"
+        displayName: "$NICK[irc]"
+
+      # Configuration for virtual IRC users.
+      ircClients:
+        nickTemplate: "$DISPLAY"
+        allowNickChanges: false
+        maxClients: 100
+        lineLimit: 5
+
+  # Configuration for logging. Optional. Default: console debug level logging
+  # only.
+  logging:
+    level: "error"
+    toConsole: true
+
+  matrixHandler:
+    eventCacheSize: 4096
+
+  ircHandler:
+    leaveConcurrency: 10
+    mapIrcMentionsToMatrix: "on" # This can be "on", "off", "force-off".
+
+sentry:
+  enabled: false
+
+database:
+  engine: "postgres"
+  connectionString: "postgres:///matrix-irc?host=/run/postgresql"
