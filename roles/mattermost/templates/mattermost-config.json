@@ -503,7 +503,7 @@
         "EnableRemoteMarketplace": false,
         "AutomaticPrepackagedPlugins": false,
         "RequirePluginSignature": false,
-        "MarketplaceUrl": "",
+        "MarketplaceUrl": "https://api.integrations.mattermost.com",
         "SignaturePublicKeyFiles": []
     },
     "DisplaySettings": {
