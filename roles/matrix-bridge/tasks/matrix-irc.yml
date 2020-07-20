@@ -35,7 +35,8 @@
     username: botmaster
     password: "{{ matrix_botmaster_password }}"
     room_alias: "{{ item.matrix }}"
-    join_rule: "invite"
+    join_rule: invite
+    history_visibility: joined
     invites:
       - "@appservice-irc:{{ domain }}"
     power_levels:

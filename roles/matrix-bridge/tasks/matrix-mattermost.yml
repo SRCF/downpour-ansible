@@ -40,7 +40,8 @@
     username: botmaster
     password: "{{ matrix_botmaster_password }}"
     room_alias: "slackbot-admin"
-    join_rule: "invite"
+    join_rule: invite
+    history_visibility: joined
     invites:
       - "@slackbot:{{ domain }}"
     power_levels:

@@ -3,8 +3,19 @@
 from ansible.module_utils.basic import *
 from matrix_client.client import *
 from matrix_client.room import Room
+from typing import Optional
 import urllib.parse
 import json
+
+def get_state(room: Room, event: str, state_key: str="") -> Optional[dict]:
+    try:
+        return room.client.api._send("GET", "/rooms/{}/state/{}/{}".format(room.room_id, event, state_key))
+    except MatrixRequestError as e:
+        # If it is currently unset, it returns 404
+        if e.code == 404:
+            return None
+        else:
+            raise
 
 def main():
     module = AnsibleModule(argument_spec={
@@ -12,6 +23,7 @@ def main():
         "password": {"required": True, "type": "str"},
         "domain": {"required": False, "type": "str", "default": "http://localhost:8008"},
         "join_rule": {"required": False, "type": "str", "choices": ["public", "invite"]},
+        "history_visibility": {"required": False, "type": "str", "choices": ["invited", "joined", "shared", "world_readable"]},
         "invites": {"required": False, "type": "list", "default": []},
         "power_levels": {"required": False, "type": "list", "default": []},
         "room_alias": {"required": False, "type": "str"},
@@ -55,8 +67,17 @@ def main():
             client.api.set_power_levels(room.room_id, content)
 
     if module.params["join_rule"] is not None:
-        # We can't tell if this changed. Just assume it didn't
-        client.api.set_join_rule(room.room_id, module.params["join_rule"])
+        current = get_state(room, "m.room.join_rules")
+        if current is None or current["join_rule"] != module.params["join_rule"]:
+            client.api.set_join_rule(room.room_id, module.params["join_rule"])
+
+    if module.params["history_visibility"] is not None:
+        current = get_state(room, "m.room.history_visibility")
+        if current is None or current["history_visibility"] != module.params["history_visibility"]:
+            changed = True
+            room.send_state_event("m.room.history_visibility", {
+                    "history_visibility": module.params["history_visibility"],
+                })
 
     module.exit_json(changed=changed, meta={"room_id": room.room_id})
 
