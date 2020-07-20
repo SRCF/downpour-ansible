@@ -59,4 +59,4 @@
     owner: root
     group: root
     mode: 644
-  notify: reload nginx
+  notify: restart nginx

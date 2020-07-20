@@ -1,6 +1,20 @@
 local json = require "json"
 local http = require "resty.http"
 
+local function ret_error(id, message, status)
+    ngx.status = status
+    ngx.header.content_type = 'application/json'
+    ngx.header["X-Request-Id"] = ngx.var.request_id
+    ngx.say(json.encode({
+        id=id,
+        message=message,
+        request_id=ngx.var.request_id,
+        detailed_error="",
+        status_code=status,
+    }))
+    ngx.exit(status)
+end
+
 local function get_body()
     ngx.req.read_body()
     return json.decode(ngx.req.get_body_data() or "{}")
@@ -16,7 +30,12 @@ local function get_mm(endpoint)
     })
     if not res then
         ret_error("api.internal_error",
-                  "Internal error when verifying permissions" .. err,
+                  "Internal error when verifying permissions. Please contact administrators. " .. err,
+                  500)
+    end
+    if res.status ~= 200 then
+        ret_error("api.internal_error",
+                  "Internal error when verifying permissions. Please contact administrators. " .. res.body,
                   500)
     end
     return json.decode(res.body)
@@ -36,20 +55,6 @@ local function match(pattern, method)
     end
     ngx.ctx.capture = string.match(ngx.var.uri, "^/api/v4" .. pattern .. "$")
     return ngx.ctx.capture ~= nil
-end
-
-local function ret_error(id, message, status)
-    ngx.status = status
-    ngx.header.content_type = 'application/json'
-    ngx.header["X-Request-Id"] = ngx.var.request_id
-    ngx.say(json.encode({
-        id=id,
-        message=message,
-        request_id=ngx.var.request_id,
-        detailed_error="",
-        status_code=status,
-    }))
-    ngx.exit(status)
 end
 
 -- Only allow @srcf or @cam email addresses, unless invited.

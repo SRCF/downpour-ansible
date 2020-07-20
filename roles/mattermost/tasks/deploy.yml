@@ -35,6 +35,7 @@
     group: www-data
     mode: 0660
   when: admin_token_value.changed
+  notify: reload nginx
 
 - name: Copy mattermost nginx config
   template:
