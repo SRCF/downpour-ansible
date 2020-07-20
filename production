@@ -3,3 +3,4 @@ all:
     downpour.srcf.net:
       mattermost_domain: mattermost.srcf.net
       matrix_domain: matrix.srcf.net
+      irc_suffix: ""

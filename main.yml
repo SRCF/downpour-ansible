@@ -48,8 +48,8 @@
     - matrix_mattermost_port: 9998
     - matrix_mattermost_webhook_port: 9898
     - matrix_irc_bridges:
-       - { irc: "#town-square", matrix: "town-square" }
-       - { irc: "#hackday", matrix: "hackday" }
+       - { irc: "#town-square{{ irc_suffix }}", matrix: "town-square" }
+       - { irc: "#hackday{{ irc_suffix }}", matrix: "hackday" }
     - matrix_mattermost_bridges:
        - "town-square"
        - "hackday"
