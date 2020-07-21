@@ -48,11 +48,13 @@
     - matrix_mattermost_port: 9998
     - matrix_mattermost_webhook_port: 9898
     - matrix_irc_bridges:
-       - { irc: "#town-square{{ irc_suffix }}", matrix: "town-square" }
-       - { irc: "#hackday{{ irc_suffix }}", matrix: "hackday" }
+       - { irc: "#town-square", matrix: "town-square" }
+       - { irc: "#hackday", matrix: "hackday" }
+       - { irc: "#welcome", matrix: "welcome" }
     - matrix_mattermost_bridges:
        - "town-square"
        - "hackday"
+       - "welcome"
 
     - matrix_botmaster_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256

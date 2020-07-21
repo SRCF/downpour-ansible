@@ -54,7 +54,7 @@ ircService:
       mappings:
         {% for entry in matrix_irc_room_ids.results %}
 
-        "{{ entry.item.irc }}":
+        "{{ entry.item.irc }}{{ irc_suffix }}":
           roomIds: ["{{ entry.meta.room_id }}"]
 
         {% endfor %}
@@ -62,7 +62,7 @@ ircService:
       # Configuration for virtual matrix users.
       matrixClients:
         userTemplate: "@irc_$NICK"
-        displayName: "$NICK[irc]"
+        displayName: "$NICK[irc]{{ irc_suffix }}"
 
       # Configuration for virtual IRC users.
       ircClients:
