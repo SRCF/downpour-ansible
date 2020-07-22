@@ -117,9 +117,4 @@ elseif match("/channels/([a-z0-9]*)", "DELETE") or
                   "Only team administrators can modify channels properties",
                   403)
     end
-elseif match("/analytics/public", "GET") then
-    local analytics = get_mm("/analytics/old?name=standard&team_id=")
-    ngx.header.content_type = 'application/json'
-    ngx.say(json.encode(analytics))
-    ngx.exit(200)
 end
