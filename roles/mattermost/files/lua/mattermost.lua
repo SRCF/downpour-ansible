@@ -37,7 +37,7 @@ local function get_mm(endpoint)
 
     if res.status == 403 then
         ret_error("api.context.permission.app_error",
-                  "Only team administrators can modify channels properties",
+                  "Only team administrators can modify channel properties",
                   403)
     end
 
