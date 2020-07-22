@@ -23,16 +23,24 @@ end
 local function get_mm(endpoint)
     local httpc = http.new()
     local uri = "http://127.0.0.1:8065/api/v4" .. endpoint
-    local res, err = httpc:request_uri(uri, {
-        headers = {
-            ["Authorization"] = "Bearer " .. ngx.var.access_token
-        }
-    })
+
+    local req_headers = ngx.req.get_headers()
+    local res, err = httpc:request_uri(uri, { headers = {
+	["Cookie"] = req_headers["Cookie"],
+	["Authorization"] = req_headers["Authorization"],
+    }})
     if not res then
         ret_error("api.internal_error",
                   "Internal error when verifying permissions. Please contact administrators. " .. err,
                   500)
     end
+
+    if res.status == 403 then
+        ret_error("api.context.permission.app_error",
+                  "Only team administrators can modify channels properties",
+                  403)
+    end
+
     if res.status ~= 200 then
         ret_error("api.internal_error",
                   "Internal error when verifying permissions. Please contact administrators. " .. res.body,

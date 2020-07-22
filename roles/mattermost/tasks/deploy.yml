@@ -14,29 +14,6 @@
     state: started
     name: mattermost
 
-- name: Check if admin token exists
-  stat:
-    path: /etc/mattermost-admin-token
-  register: admin_token
-
-- name: Create internal admin access token
-  mattermost_token:
-    username: admin
-    password: "{{ mattermost_admin_password }}"
-    token_description: "Internal server use. DO NOT DELETE."
-  register: admin_token_value
-  when: not admin_token.stat.exists
-
-- name: Write admin access token
-  copy:
-    dest: /etc/mattermost-admin-token
-    content: "set $access_token {{ admin_token_value.meta.token }};"
-    owner: mattermost
-    group: www-data
-    mode: 0660
-  when: admin_token_value.changed
-  notify: reload nginx
-
 - name: Copy mattermost nginx config
   template:
     src: mattermost.conf
