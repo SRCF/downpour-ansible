@@ -51,10 +51,13 @@
        - { irc: "#general", matrix: "town-square" }
        - { irc: "#hackday", matrix: "hackday" }
        - { irc: "#welcome", matrix: "welcome" }
+       - { irc: "#society", matrix: "society" }
+
     - matrix_mattermost_bridges:
        - "town-square"
        - "hackday"
        - "welcome"
+       - "society"
 
     - matrix_botmaster_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
