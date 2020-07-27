@@ -8,12 +8,12 @@
 - name: Create mattermost admin user if missing
   become_user: mattermost
   command: "mattermost user create --email devnull@srcf.net --system_admin true --username admin --password {{ mattermost_admin_password }}"
-  when: '"sysadmins" not in admin_user.stdout'
+  when: '"auth_service" not in admin_user.stdout'
 
 - name: Verify mattermost admin user email
   become_user: mattermost
   command: "mattermost user verify admin"
-  when: '"sysadmins" not in admin_user.stdout'
+  when: '"auth_service" not in admin_user.stdout'
 
 - name: Save mattermost admin password
   copy:
