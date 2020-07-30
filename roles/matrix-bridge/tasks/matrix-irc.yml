@@ -1,7 +1,33 @@
+- name: Install oidentd
+  apt:
+    package: oidentd
+
+- name: Enable oidentd
+  systemd:
+    name: oidentd
+    state: started
+    enabled: true
+
+- name: Install oidentd config
+  copy:
+    src: oidentd.conf
+    dest: /etc/
+    owner: root
+    group: root
+    mode: 0644
+
 - name: Create matrix-irc user
   user:
     name: matrix-irc
     system: true
+
+- name: Install matrix oidentd config
+  copy:
+    src: matrix-irc.oidentd.conf
+    dest: /home/matrix-irc/.oidentd.conf
+    owner: matrix-irc
+    group: matrix-irc
+    mode: 0644
 
 - name: Create matrix-irc postgres user
   become_user: postgres

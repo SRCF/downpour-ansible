@@ -84,6 +84,10 @@ ircService:
     leaveConcurrency: 10
     mapIrcMentionsToMatrix: "on" # This can be "on", "off", "force-off".
 
+  ident:
+    enabled: true
+    port: 1113
+
 sentry:
   enabled: false
 
