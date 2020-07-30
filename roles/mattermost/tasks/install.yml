@@ -18,7 +18,7 @@
     checksum: "{{ mattermost_checksum }}"
   register: mm_download
 
-- name: Stop mattermost if upgradaing
+- name: Stop mattermost if upgrading
   systemd:
     name: mattermost
     state: stopped

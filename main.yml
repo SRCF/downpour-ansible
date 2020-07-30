@@ -38,6 +38,24 @@
           35646461303034386336643731653935656534366566396338626264636336386433373634363332
           38363966373865656530
 
+    - mattermost_rooms:
+       - name: "town-square"
+         display_name: "general"
+         header: "Join ~hackday -- it's where sysadmins and friends come to chat"
+       - name: "hackday"
+         display_name: "hackday"
+         header: "SRCF hackery"
+       - name: "welcome"
+         display_name: "welcome"
+         header: "Hello there! Introduce yourself and welcome others :)"
+       - name: "society"
+         display_name: "society"
+         header: "General society business"
+       - name: "timeout"
+         display_name: "timeout"
+         header: "Timeout is growing -- let's make it happen!"
+
+
   roles:
     - certbot
     - mattermost
@@ -63,11 +81,11 @@
        - { irc: "#timeout", matrix: "timeout" }
 
     - matrix_mattermost_bridges:
-       - "town-square"
-       - "hackday"
-       - "welcome"
-       - "society"
-       - "timeout"
+       - { mattermost: "town-square",  matrix: "town-square" }
+       - { mattermost: "hackday", matrix: "hackday" }
+       - { mattermost: "welcome", matrix: "welcome" }
+       - { mattermost: "society", matrix: "society" }
+       - { mattermost: "timeout", matrix: "timeout" }
 
     - matrix_botmaster_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256

@@ -52,7 +52,7 @@
   matrix_room:
     username: botmaster
     password: "{{ matrix_botmaster_password }}"
-    room_alias: "{{ item }}"
+    room_alias: "{{ item.matrix }}"
     join_rule: "invite"
     invites:
       - "@slackbot:{{ domain }}"
