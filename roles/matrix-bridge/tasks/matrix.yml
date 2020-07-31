@@ -41,6 +41,17 @@
     template: template0
     encoding: UTF8
 
+- name: Create matrix-synapse group
+  group:
+    name: matrix-synapse
+    system: true
+
+- name: Add matrix-synapse to group
+  user:
+    name: matrix-synapse
+    groups: matrix-synapse
+    append: true
+
 - name: Install matrix config
   template:
     src: homeserver.yaml

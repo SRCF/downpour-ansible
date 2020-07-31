@@ -21,6 +21,12 @@
     name: matrix-irc
     system: true
 
+- name: Add matrix-synapse user to group
+  user:
+    name: matrix-synapse
+    groups: matrix-irc
+    append: true
+
 - name: Install matrix oidentd config
   copy:
     src: matrix-irc.oidentd.conf
@@ -77,14 +83,22 @@
     dest: /home/matrix-irc/config.yaml
     owner: matrix-irc
     group: matrix-irc
-    mode: 0644
+    mode: 0600
   register: config_matrix_irc
   notify: restart matrix-irc
+
+- name: Create private registration directory
+  file:
+    path: /home/matrix-irc/registration
+    state: directory
+    owner: matrix-irc
+    group: matrix-synapse
+    mode: 0750
 
 - name: Create registration.yaml
   become_user: matrix-irc
   command:
-    cmd: node matrix-appservice-irc/app.js -r -f registration.yaml -u "http://localhost:{{ matrix_irc_port }}" -c config.yaml
+    cmd: node matrix-appservice-irc/app.js -r -f registration/registration.yaml -u "http://localhost:{{ matrix_irc_port }}" -c config.yaml
     chdir: /home/matrix-irc/
   when: config_matrix_irc.changed
   notify: restart matrix
