@@ -1,0 +1,56 @@
+- name: "Create {{ protocol }} bridge user"
+  user:
+    name: "matrix-{{ protocol }}"
+    system: true
+
+- name: "Create {{ protocol }} bridge postgres user"
+  become_user: postgres
+  postgresql_user:
+    name: "matrix-{{ protocol }}"
+
+- name: "Create {{ protocol }} bridge postgres database"
+  become_user: postgres
+  postgresql_db:
+    name: "matrix-{{ protocol }}"
+
+- name: "Clone {{ protocol }} bridge"
+  become_user: "matrix-{{ protocol }}"
+  git:
+    repo: "{{ bridge_url }}"
+    dest: "/home/matrix-{{ protocol }}/lib/"
+    version: "{{ bridge_version }}"
+  notify:
+    - "build matrix-{{ protocol }}"
+    - "restart matrix-{{ protocol }}"
+
+- name: "Install matrix-{{ protocol }} config file"
+  become_user: "matrix-{{ protocol }}"
+  template:
+    src: "matrix-{{ protocol }}-config.yaml"
+    dest: "/home/matrix-{{ protocol }}/config.yaml"
+    owner: "matrix-{{ protocol }}"
+    group: "matrix-{{ protocol }}"
+    mode: 0600
+  notify: "restart matrix-{{ protocol }}"
+
+- name: "Create matrix-{{ protocol }} registration directory"
+  file:
+    path: "/home/matrix-{{ protocol }}/registration"
+    state: directory
+    owner: "matrix-{{ protocol }}"
+    group: matrix-synapse
+    mode: 0750
+
+- name: "Copy matrix-{{ protocol }} systemd config"
+  copy:
+    src: "matrix-{{ protocol }}.service"
+    dest: /etc/systemd/system/
+    owner: root
+    group: root
+    mode: '0644'
+  notify: "restart matrix-{{ protocol }}"
+
+- name: "Enable matrix-{{ protocol }}"
+  systemd:
+    enabled: true
+    name: "matrix-{{ protocol }}"

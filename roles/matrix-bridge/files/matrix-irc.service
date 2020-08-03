@@ -5,7 +5,7 @@ After=network.target
 [Service]
 User=matrix-irc
 Group=matrix-irc
-ExecStart=/usr/bin/node /home/matrix-irc/matrix-appservice-irc/app.js -f /home/matrix-irc/registration/registration.yaml -c /home/matrix-irc/config.yaml
+ExecStart=/usr/bin/node --experimental-worker /home/matrix-irc/lib/app.js -f /home/matrix-irc/registration/registration.yaml -c /home/matrix-irc/config.yaml
 KillMode=mixed
 Restart=on-failure
 

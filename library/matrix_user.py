@@ -7,7 +7,7 @@ import json
 def main():
     module = AnsibleModule(argument_spec={
         "username": {"required": True, "type": "str"},
-        "password": {"required": True, "type": "str"},
+        "password": {"required": True, "type": "str", "no_log": True},
         "domain": {"required": False, "type": "str", "default": "http://localhost:8008"},
         "shared_secret": {"required": False, "type": "str"},
     })

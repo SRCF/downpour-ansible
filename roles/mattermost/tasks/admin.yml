@@ -5,17 +5,19 @@
   changed_when: false
   register: admin_user
 
+- name: Get mattermost admin password
+  password:
+    path: "{{ mattermost_admin_password_path }}"
+  register: mattermost_admin_password
+  no_log: True
+
 - name: Create mattermost admin user if missing
   become_user: mattermost
-  command: "mattermost user create --email devnull@srcf.net --system_admin true --username admin --password {{ mattermost_admin_password }}"
+  command: "mattermost user create --email devnull@srcf.net --system_admin true --username admin --password {{ mattermost_admin_password.meta }}"
   when: '"auth_service" not in admin_user.stdout'
+  no_log: True
 
 - name: Verify mattermost admin user email
   become_user: mattermost
   command: "mattermost user verify admin"
   when: '"auth_service" not in admin_user.stdout'
-
-- name: Save mattermost admin password
-  copy:
-    dest: /root/mattermost-admin-password
-    content: "{{ mattermost_admin_password }}\n"

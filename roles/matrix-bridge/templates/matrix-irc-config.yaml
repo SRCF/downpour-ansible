@@ -1,6 +1,6 @@
 homeserver:
   url: "https://{{ domain }}"
-  domain: "{{ domain }}"
+  domain: "{{ matrix_server_name }}"
 
   enablePresence: false
   bindPort: {{ matrix_irc_port }}
@@ -33,10 +33,8 @@ ircService:
         federate: false
 
       excludedUsers:
-        - regex: "@slackbot:{{ domain }}"
-          kickReason: "We don't welcome bots"
-        - regex: "@botmaster:{{ domain }}"
-          kickReason: "We don't welcome bots"
+        - regex: "@matterbot:{{ matrix_server_name }}"
+        - regex: "@puppeteer:{{ matrix_server_name }}"
 
       membershipLists:
         enabled: true
@@ -62,11 +60,11 @@ ircService:
       # Configuration for virtual matrix users.
       matrixClients:
         userTemplate: "@irc_$NICK"
-        displayName: "$NICK[irc]{{ irc_suffix }}"
+        displayName: "$NICK [IRC]"
 
       # Configuration for virtual IRC users.
       ircClients:
-        nickTemplate: "$DISPLAY"
+        nickTemplate: "$DISPLAY{{ irc_suffix }}"
         allowNickChanges: true
         maxClients: 100
         lineLimit: 5

@@ -16,6 +16,7 @@
     url: "https://releases.mattermost.com/{{ mattermost_version }}/mattermost-team-{{ mattermost_version }}-linux-amd64.tar.gz"
     dest: "/opt/mattermost-team-{{ mattermost_version }}-linux-amd64.tar.gz"
     checksum: "{{ mattermost_checksum }}"
+    mode: 644
   register: mm_download
 
 - name: Stop mattermost if upgrading
@@ -42,6 +43,13 @@
     remote_src: true
   when: mm_download.changed
   notify: restart mattermost
+
+- name: Get public link salt
+  password:
+    path: "{{ mattermost_public_link_salt_path }}"
+    length: 32
+  register: mattermost_public_link_salt
+  no_log: True
 
 - name: Copy mattermost configuration
   template:

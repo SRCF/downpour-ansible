@@ -3,6 +3,7 @@
     url: "{{ plugin_url }}"
     dest: "/opt/{{ plugin_name }}-{{ plugin_version }}.tar.gz"
     checksum: "{{ plugin_checksum }}"
+    mode: 644
 
 - name: "Unpack {{ plugin_name }} plugin"
   unarchive:

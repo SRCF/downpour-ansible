@@ -16,17 +16,6 @@
     group: root
     mode: 0644
 
-- name: Create matrix-irc user
-  user:
-    name: matrix-irc
-    system: true
-
-- name: Add matrix-synapse user to group
-  user:
-    name: matrix-synapse
-    groups: matrix-irc
-    append: true
-
 - name: Install matrix oidentd config
   copy:
     src: matrix-irc.oidentd.conf
@@ -35,84 +24,41 @@
     group: matrix-irc
     mode: 0644
 
-- name: Create matrix-irc postgres user
-  become_user: postgres
-  postgresql_user:
-    name: matrix-irc
+- name: Allow incoming ident
+  ufw:
+    rule: allow
+    port: auth
+    proto: tcp
 
-- name: Create matrix-irc postgres database
-  become_user: postgres
-  postgresql_db:
-    name: matrix-irc
+- name: Forbid outgoing postgres
+  ufw:
+    rule: deny
+    port: postgres
+    direction: out
+    proto: tcp
 
-- name: Clone matrix-appservice-irc
-  become_user: matrix-irc
-  git:
-    repo: 'https://github.com/matrix-org/matrix-appservice-irc'
-    dest: /home/matrix-irc/matrix-appservice-irc/
-    version: 338d2d2fcc1da761f8c64507ee50ddfd2810cd2c # 0.18.0. Newer version require node 12
-  register: install_matrix_irc
-  notify: restart matrix-irc
-
-- name: Build matrix-appservice-irc
-  become_user: matrix-irc
-  command:
-    cmd: npm install
-    chdir: /home/matrix-irc/matrix-appservice-irc
-  when: install_matrix_irc.changed
+- name: Get puppeteer password
+  password:
+    path: "{{ matrix_puppeteer_password_path }}"
+  register: matrix_puppeteer_password
+  no_log: true
 
 - name: Create bridged rooms and find room ids
-  become_user: matrix-irc
   matrix_room:
-    username: botmaster
-    password: "{{ matrix_botmaster_password }}"
+    username: puppeteer
+    password: "{{ matrix_puppeteer_password.meta }}"
     room_alias: "{{ item.matrix }}"
     join_rule: invite
     history_visibility: joined
     invites:
-      - "@appservice-irc:{{ domain }}"
+      - "@appservice-irc:{{ matrix_server_name }}"
     power_levels:
-      - ["@appservice-irc:{{ domain }}", 100]
+      - ["@appservice-irc:{{ matrix_server_name }}", 100]
   register: "matrix_irc_room_ids"
   loop: "{{ matrix_irc_bridges }}"
 
-- name: Install matrix-appservice-irc config file
-  become_user: matrix-irc
-  template:
-    src: matrix-irc-config.yaml
-    dest: /home/matrix-irc/config.yaml
-    owner: matrix-irc
-    group: matrix-irc
-    mode: 0600
-  register: config_matrix_irc
-  notify: restart matrix-irc
-
-- name: Create private registration directory
-  file:
-    path: /home/matrix-irc/registration
-    state: directory
-    owner: matrix-irc
-    group: matrix-synapse
-    mode: 0750
-
-- name: Create registration.yaml
-  become_user: matrix-irc
-  command:
-    cmd: node matrix-appservice-irc/app.js -r -f registration/registration.yaml -u "http://localhost:{{ matrix_irc_port }}" -c config.yaml
-    chdir: /home/matrix-irc/
-  when: config_matrix_irc.changed
-  notify: restart matrix
-
-- name: Copy matrix-irc systemd config
-  copy:
-    src: matrix-irc.service
-    dest: /etc/systemd/system/
-    owner: root
-    group: root
-    mode: '0644'
-  notify: restart matrix-irc
-
-- name: Enable matrix-irc
-  systemd:
-    enabled: true
-    name: matrix-irc
+- import_tasks: bridge_base.yml
+  vars:
+    - protocol: irc
+    - bridge_url: 'https://github.com/matrix-org/matrix-appservice-irc'
+    - bridge_version: 7ba7c2bbf77056fcff44dd29b3144edc0cb531c5

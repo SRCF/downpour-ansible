@@ -5,7 +5,7 @@ FIELDS = ["name", "display_name", "purpose", "header"]
 def main():
     module = AnsibleModule(argument_spec={
         "username": {"required": True, "type": "str"},
-        "password": {"required": True, "type": "str"},
+        "password": {"required": True, "type": "str", "no_log": True},
         "url": {"required": False, "type": "str", "default": "localhost"},
         "scheme": {"required": False, "type": "str", "default": "http"},
         "port": {"required": False, "type": "int", "default": 8065},
@@ -26,6 +26,14 @@ def main():
 
     if driver.teams.check_team_exists(module.params["name"])["exists"]:
         team = driver.teams.get_team_by_name(module.params["name"])
+        try:
+            driver.teams.get_team_member(team["id"], driver.client.userid)
+        except:
+            driver.teams.add_user_to_team(team["id"], {
+                "team_id": team["id"],
+                "user_id": driver.client.userid
+            })
+            changed=True
     else:
         changed = True
         team = driver.teams.create_team(options={

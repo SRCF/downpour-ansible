@@ -50,4 +50,4 @@ default_identity_server: https://{{ domain }}
 
 signing_key_path: "/etc/matrix-synapse/homeserver.signing.key"
 trusted_key_servers:
-  - server_name: "{{ domain }}"
+  - server_name: "{{ matrix_server_name }}"

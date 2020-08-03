@@ -1,94 +1,34 @@
-- name: Create matrix-mattermost user
-  user:
-    name: matrix-mattermost
-    system: true
-
-- name: Create matrix-mattermost postgres user
-  become_user: postgres
-  postgresql_user:
-    name: matrix-mattermost
-
-- name: Create matrix-mattermost postgres database
-  become_user: postgres
-  postgresql_db:
-    name: matrix-mattermost
-
-- name: Clone matrix-appservice-slack
-  become_user: matrix-mattermost
-  git:
-    repo: 'https://github.com/dalcde/matrix-appservice-slack'
-    dest: /home/matrix-mattermost/matrix-appservice-slack/
-    version: c471eea96b8f83fdc37e8f7626ae9ed30f1cfc14 # 1.4.0 + suffix
-  register: install_matrix_slack
-
-- name: Install matrix-appservice-slack dependencies
-  become_user: matrix-mattermost
-  command:
-    cmd: npm install
-    chdir: /home/matrix-mattermost/matrix-appservice-slack
-  when: install_matrix_slack.changed
-
-- name: Build matrix-appservice-slack
-  become_user: matrix-mattermost
-  command:
-    cmd: npm run build
-    chdir: /home/matrix-mattermost/matrix-appservice-slack
-  when: install_matrix_slack.changed
-
-- name: Create slackbot admin room
-  matrix_room:
-    username: botmaster
-    password: "{{ matrix_botmaster_password }}"
-    room_alias: "slackbot-admin"
-    join_rule: invite
-    history_visibility: joined
-    invites:
-      - "@slackbot:{{ domain }}"
-    power_levels:
-      - ["@slackbot:{{ domain }}", 100]
-  register: "slackbot_admin_room"
+- name: Get puppeteer password
+  password:
+    path: "{{ matrix_puppeteer_password_path }}"
+  register: matrix_puppeteer_password
+  no_log: true
 
 - name: Join bridged rooms
   matrix_room:
-    username: botmaster
-    password: "{{ matrix_botmaster_password }}"
+    username: puppeteer
+    password: "{{ matrix_puppeteer_password.meta }}"
     room_alias: "{{ item.matrix }}"
     join_rule: "invite"
     invites:
-      - "@slackbot:{{ domain }}"
+      - "@matterbot:{{ matrix_server_name }}"
     power_levels:
-      - ["@slackbot:{{ domain }}", 100]
+      - ["@matterbot:{{ matrix_server_name }}", 100]
+  register: matrix_rooms
   loop: "{{ matrix_mattermost_bridges }}"
 
-- name: Install matrix-appservice-slack config file
-  become_user: matrix-mattermost
-  template:
-    src: matrix-mattermost-config.yaml
-    dest: /home/matrix-mattermost/config.yaml
-    owner: matrix-mattermost
-    group: matrix-mattermost
-    mode: 0644
-  register: config_matrix_slack
-  notify: restart matrix-mattermost
+- import_tasks: srcf.yml
 
-- name: Create registration.yaml
-  become_user: matrix-mattermost
-  command:
-    cmd: npm start -- -r -f ../registration.yaml -u "http://localhost:{{ matrix_mattermost_port }}" -c ../config.yaml
-    chdir: /home/matrix-mattermost/matrix-appservice-slack/
-  when: config_matrix_slack.changed
-  notify: restart matrix
+- name: Get token
+  mattermost_token:
+    username: matrixbot
+    password: "{{ mattermost_matrixbot_password.meta }}"
+    token_description: "bridge bot"
+    path: "{{ mattermost_matrixbot_token_path }}"
+  register: bot_user
 
-- name: Copy matrix-mattermost systemd config
-  copy:
-    src: matrix-mattermost.service
-    dest: /etc/systemd/system/
-    owner: root
-    group: root
-    mode: '0644'
-  notify: restart matrix-mattermost
-
-- name: Enable matrix-mattermost
-  systemd:
-    enabled: true
-    name: matrix-mattermost
+- import_tasks: bridge_base.yml
+  vars:
+    - protocol: mattermost
+    - bridge_url: 'https://github.com/dalcde/matrix-appservice-mattermost'
+    - bridge_version: e3633ecb587a38578085ef06ffd9e91db7fe4ce1 # v0.1.0

@@ -59,7 +59,6 @@
     owner: root
     group: root
     mode: '0644'
-  register: config
 
 - name: Install matrix server_name config
   template:
@@ -68,13 +67,6 @@
     owner: root
     group: root
     mode: '0644'
-  register: server_name
-
-- name: Restart matrix if config files changed
-  systemd:
-    name: matrix-synapse
-    state: restarted
-  when: config.changed or server_name.changed
 
 - name: Install matrix logging config
   copy:
@@ -92,26 +84,26 @@
     mode: 0755
     state: directory
 
-- name: Start matrix
+- meta: flush_handlers
+- name: Ensure matrix started
   systemd:
-    enabled: true
-    state: started
     name: matrix-synapse
+    state: started
 
-- name: Create botmaster user
+- name: Wait for matrix to start up
+  matrix_load:
+
+- name: Get puppeteer password
+  password:
+    path: "{{ matrix_puppeteer_password_path }}"
+  register: matrix_puppeteer_password
+  no_log: true
+
+- name: Create puppeteer user
   matrix_user:
-    username: botmaster
-    password: "{{ matrix_botmaster_password }}"
+    username: puppeteer
+    password: "{{ matrix_puppeteer_password.meta }}"
     shared_secret: "{{ matrix_registration_secret }}"
-
-  #  script: "matrix-commands.py ensure_user botmaster '{{ matrix_botmaster_password }}' '{{ matrix_registration_secret }}'"
-  #  register: create_botmaster
-  #  changed_when: '"Changed" in create_botmaster.stdout'
-
-- name: Save botmaster password
-  copy:
-    dest: /root/matrix-botmaster-password
-    content: "{{ matrix_botmaster_password }}\n"
 
 - name: Copy matrix nginx config
   template:
@@ -131,3 +123,7 @@
     state: link
   notify: reload nginx
 
+- name: Enable matrix
+  systemd:
+    enabled: true
+    name: matrix-synapse

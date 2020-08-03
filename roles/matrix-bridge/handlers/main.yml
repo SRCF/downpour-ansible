@@ -1,23 +1,60 @@
 ---
-- name: restart matrix
-  systemd:
-    name: matrix-synapse
-    state: restarted
-    daemon_reload: yes
-
-- name: restart matrix-irc
-  systemd:
-    name: matrix-irc
-    state: restarted
-    daemon_reload: yes
-
-- name: restart matrix-mattermost
-  systemd:
-    name: matrix-mattermost
-    state: restarted
-    daemon_reload: yes
-
+# 1. Restart nginx
+# 2. Build
+# 3. Generate registration
+# 4. Restart matrix
+# 5. Restart bridges
 - name: reload nginx
   systemd:
     name: nginx
     state: reloaded
+
+- name: build matrix-irc
+  become_user: matrix-irc
+  command:
+    cmd: npm install
+    chdir: /home/matrix-irc/lib/
+
+- name: Create matrix-irc registration.yaml
+  become_user: matrix-irc
+  command:
+    cmd: node --experimental-worker lib/app.js -r -f registration/registration.yaml -u "http://localhost:{{ matrix_irc_port }}" -c config.yaml
+    chdir: /home/matrix-irc/
+  listen: restart matrix-irc
+
+- name: build matrix-mattermost
+  become_user: matrix-mattermost
+  shell:
+    cmd: npm install && npm run build
+    chdir: /home/matrix-mattermost/lib/
+
+- name: Generate matrix-mattermost registration.yaml
+  become_user: matrix-mattermost
+  command:
+    cmd: node lib/build/index.js -r -f registration/registration.yaml -u dummy -c config.yaml
+    chdir: /home/matrix-mattermost/
+  listen: restart matrix-mattermost
+
+- name: Restart matrix
+  systemd:
+    name: matrix-synapse
+    state: restarted
+    daemon_reload: yes
+  listen:
+    - restart matrix
+    - restart matrix-mattermost
+    - restart matrix-irc
+
+- name: Restart matrix-irc
+  systemd:
+    name: matrix-irc
+    state: restarted
+    daemon_reload: yes
+  listen: restart matrix-irc
+
+- name: Restart matrix-mattermost
+  systemd:
+    name: matrix-mattermost
+    state: restarted
+    daemon_reload: yes
+  listen: restart matrix-mattermost

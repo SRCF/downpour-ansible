@@ -76,6 +76,7 @@
         "ExperimentalGroupUnreadChannels": "disabled",
         "ExperimentalChannelOrganization": false,
         "ExperimentalChannelSidebarOrganization": "disabled",
+        "ExperimentalDataPrefetch": true,
         "ImageProxyType": "",
         "ImageProxyURL": "",
         "ImageProxyOptions": "",
@@ -155,7 +156,9 @@
         "FileJson": true,
         "FileLocation": "",
         "EnableWebhookDebugging": false,
-        "EnableDiagnostics": false
+        "EnableDiagnostics": false,
+        "EnableSentry": false,
+        "AdvancedLoggingConfig": ""
     },
     "ExperimentalAuditSettings": {
         "SysLogEnabled": false,
@@ -197,11 +200,12 @@
         "DriverName": "local",
         "Directory": "/mnt/mattermost/",
         "EnablePublicLink": true,
-        "PublicLinkSalt": "{{ mattermost_public_link_salt }}",
+        "PublicLinkSalt": "{{ mattermost_public_link_salt.meta }}",
         "InitialFont": "nunito-bold.ttf",
         "AmazonS3AccessKeyId": "",
         "AmazonS3SecretAccessKey": "",
         "AmazonS3Bucket": "",
+        "AmazonS3PathPrefix": "",
         "AmazonS3Region": "",
         "AmazonS3Endpoint": "s3.amazonaws.com",
         "AmazonS3SSL": true,
@@ -230,6 +234,7 @@
         "SendPushNotifications": true,
         "PushNotificationServer": "https://push-test.mattermost.com",
         "PushNotificationContents": "full",
+        "PushNotificationBuffer": 1000,
         "EnableEmailBatching": false,
         "EmailBatchingBufferSize": 256,
         "EmailBatchingInterval": 30,
@@ -261,7 +266,8 @@
         "ReportAProblemLink": "https://docs.srcf.net/",
         "SupportEmail": "sysadmins@srcf.net",
         "CustomTermsOfServiceEnabled": false,
-        "CustomTermsOfServiceReAcceptancePeriod": 365
+        "CustomTermsOfServiceReAcceptancePeriod": 365,
+        "EnableAskCommunityLink": true
     },
     "AnnouncementSettings": {
         "EnableBanner": false,
@@ -398,6 +404,7 @@
         "AdvertiseAddress": "",
         "UseIpAddress": true,
         "UseExperimentalGossip": false,
+        "EnableExperimentalGossipEncryption": false,
         "ReadOnlyConfig": true,
         "GossipPort": 8074,
         "StreamingPort": 8075,
@@ -468,7 +475,8 @@
             "CustomerType": "A9",
             "SmtpUsername": "",
             "SmtpPassword": "",
-            "EmailAddress": ""
+            "EmailAddress": "",
+            "SMTPServerTimeout": 1800
         }
     },
     "JobSettings": {

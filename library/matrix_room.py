@@ -20,7 +20,7 @@ def get_state(room: Room, event: str, state_key: str="") -> Optional[dict]:
 def main():
     module = AnsibleModule(argument_spec={
         "username": {"required": True, "type": "str"},
-        "password": {"required": True, "type": "str"},
+        "password": {"required": True, "type": "str", "no_log": True},
         "domain": {"required": False, "type": "str", "default": "http://localhost:8008"},
         "join_rule": {"required": False, "type": "str", "choices": ["public", "invite"]},
         "history_visibility": {"required": False, "type": "str", "choices": ["invited", "joined", "shared", "world_readable"]},
@@ -38,12 +38,7 @@ def main():
         changed = True
     except MatrixRequestError as e:
         if json.loads(e.content)["errcode"] == "M_ROOM_IN_USE":
-            # Get proper domain name
-            import requests
-            result = requests.get(module.params["domain"] + "/.well-known/matrix/client").json()
-            url = urllib.parse.urlparse(result["m.homeserver"]["base_url"]).netloc
-
-            room_id = client.api.get_room_id("#" + module.params["room_alias"] + ":" + url)
+            room_id = client.api.get_room_id("#" + module.params["room_alias"] + ":" + client.hs)
             room = Room(client, room_id)
             for user_id in module.params["invites"]:
                 # Failure can be due to many reasons, one of which is that the user is

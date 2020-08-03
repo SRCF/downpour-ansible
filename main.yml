@@ -5,27 +5,14 @@
   tags:
     - mattermost
   vars:
-    - domain: "{{ mattermost_domain }}"
+    - domain: "mattermost.{{ root_domain }}"
     - certbot_email: soc-srcf-admin@lists.cam.ac.uk
-    - mattermost_version: 5.25.0
-    - mattermost_checksum: sha256:4d8053508108a2f2d33a4bfaadb821f34c20694905b14ab747a08f91fb17f801
+    - mattermost_version: 5.26.0
+    - mattermost_checksum: sha256:4382c9064dfd8981308f2b1fda04392a1038c2e2e4fa2e9f824421b37aef1df7
     - mattermost_bbb_plugin_version: 2.1.0
     - mattermost_bbb_plugin_checksum: sha256:2a8b14bb22d44c4039c772b852f5499c1902f3ff6e11eb4dbd583528b5ba3e2e
-    - mattermost_admin_password: !vault |
-          $ANSIBLE_VAULT;1.1;AES256
-          39643061306665306661386335376233613761653462623565653461343039616134643466616363
-          3037613635643235653966373639333933303366393233640a613130356464316331643233633637
-          61393130373632323462356238383563363731313039303039633636353030376131353636613136
-          6638393364613762650a623263356630616331623639636138626462353634396662633163323561
-          6133
-    - mattermost_public_link_salt: !vault |
-          $ANSIBLE_VAULT;1.1;AES256
-          31356362383834653031626332393338333436353833626139323130626237303961323632306665
-          6331373736343938633136613730643038316632303064630a353562623530663563303066643662
-          34326239663866303566643266353666636162396461616531323636353832356339333634366261
-          3666376237633738360a643339316135613065626237323239666361363130306631356464613563
-          66613539643133616563393937383664363334626431363239393061386436363462666362363538
-          6232353734303831623735356164643230376161316538343737
+    - mattermost_admin_password_path: /root/mattermost-admin-password
+    - mattermost_public_link_salt_path: /root/mattermost-public-link-salt
 
     - bbb_secret: !vault |
           $ANSIBLE_VAULT;1.1;AES256
@@ -38,24 +25,6 @@
           35646461303034386336643731653935656534366566396338626264636336386433373634363332
           38363966373865656530
 
-    - mattermost_rooms:
-       - name: "town-square"
-         display_name: "general"
-         header: "Join ~hackday -- it's where sysadmins and friends come to chat"
-       - name: "hackday"
-         display_name: "hackday"
-         header: "SRCF hackery"
-       - name: "welcome"
-         display_name: "welcome"
-         header: "Hello there! Introduce yourself and welcome others :)"
-       - name: "society"
-         display_name: "society"
-         header: "General society business"
-       - name: "timeout"
-         display_name: "timeout"
-         header: "Timeout is growing -- let's make it happen!"
-
-
   roles:
     - certbot
     - mattermost
@@ -66,34 +35,46 @@
   tags:
     - matrix
   vars:
-    - domain: "{{ matrix_domain }}"
+    - domain: "matrix.{{ root_domain }}"
+    - matrix_server_name: "{{ root_domain }}"
     - certbot_email: soc-srcf-admin@lists.cam.ac.uk
     - ubuntu_version: focal
     - keyring_location: /usr/share/keyrings/matrix-org-archive-keyring.gpg
     - matrix_irc_port: 9999
     - matrix_mattermost_port: 9998
     - matrix_mattermost_webhook_port: 9898
+    - mattermost_matrixbot_password_path: /root/mattermost-matrixbot-password
+    - mattermost_matrixbot_token_path: /root/mattermost-matrixbot-token
     - matrix_irc_bridges:
-       - { irc: "#general", matrix: "town-square" }
+       - { irc: "#general", matrix: "general" }
        - { irc: "#hackday", matrix: "hackday" }
        - { irc: "#welcome", matrix: "welcome" }
        - { irc: "#society", matrix: "society" }
        - { irc: "#timeout", matrix: "timeout" }
 
     - matrix_mattermost_bridges:
-       - { mattermost: "town-square",  matrix: "town-square" }
-       - { mattermost: "hackday", matrix: "hackday" }
-       - { mattermost: "welcome", matrix: "welcome" }
-       - { mattermost: "society", matrix: "society" }
-       - { mattermost: "timeout", matrix: "timeout" }
+       - name: "town-square"
+         matrix: "general"
+         display_name: "general"
+         header: "Join ~hackday -- it's where sysadmins and friends come to chat"
+       - name: "hackday"
+         matrix: "hackday"
+         display_name: "hackday"
+         header: "SRCF hackery"
+       - name: "welcome"
+         matrix: "welcome"
+         display_name: "welcome"
+         header: "Hello there! Introduce yourself and welcome others :)"
+       - name: "society"
+         matrix: "society"
+         display_name: "society"
+         header: "General society business"
+       - name: "timeout"
+         matrix: "timeout"
+         display_name: "timeout"
+         header: "Timeout is growing -- let's make it happen!"
 
-    - matrix_botmaster_password: !vault |
-          $ANSIBLE_VAULT;1.1;AES256
-          32323735376166393135306332326562643661333362616163356661633937663033656137613766
-          3661326466336139356564383832396364323138363632330a663064333938383837653237336231
-          64626265626530366338653837393562303936323636333138623039383530306439393334373135
-          3833323461643033390a393662313739313963386464383935653039383437356334303964626361
-          3462
+    - matrix_puppeteer_password_path: /root/matrix-puppeteer-password
     - matrix_registration_secret: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           66396462623539633265343932383463343064633733303533356565393133656265393732323265
@@ -103,6 +84,7 @@
           37666165333637326665396537633639633031653866356430303334336363373830663063653536
           34383733663963313538653232623834356162303061386361333032336634346630386536653462
           393730323462326536323531316165656331
+    - mattermost_admin_password_path: /root/mattermost-admin-password
 
   roles:
     - certbot

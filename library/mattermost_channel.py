@@ -6,7 +6,7 @@ FIELDS = ["name", "display_name", "purpose", "header"]
 def main():
     module = AnsibleModule(argument_spec={
         "username": {"required": True, "type": "str"},
-        "password": {"required": True, "type": "str"},
+        "password": {"required": True, "type": "str", "no_log": True},
         "url": {"required": False, "type": "str", "default": "localhost"},
         "scheme": {"required": False, "type": "str", "default": "http"},
         "port": {"required": False, "type": "int", "default": 8065},
@@ -53,6 +53,12 @@ def main():
 
     try:
         channel = driver.channels.get_channel_by_name(module.params['team_id'], module.params['name'])
+        try:
+            driver.channels.get_channel_member(channel["id"], driver.client.userid)
+        except:
+            driver.channels.add_user(channel["id"], { "user_id": driver.client.userid })
+            changed=True
+
     except:
         changed = True
         channel = driver.channels.create_channel(options=options)

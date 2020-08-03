@@ -22,7 +22,7 @@ linking command in the `#slackbot-admin` matrix channel. You will have to be a
 team administrator of the Mattermost channel.
 
 You should join `matrix.srcf.net` (or your corresponding matrix domain) as user
-`botmaster`. The password is placed in `/root/matrix-botmaster-password` on
+`puppeteer`. The password is placed in `/root/matrix-puppeteer-password` on
 the remote host. One can use the offical web client on https://app.element.io/
 to do so. You are already a member of `#slackbot-admin`.
 

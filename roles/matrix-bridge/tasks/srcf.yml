@@ -1,0 +1,55 @@
+---
+- name: Find mattermost matrixbot user
+  become_user: mattermost
+  command: "mattermost user search matrixbot"
+  changed_when: false
+  register: matrixbot_user
+
+- name: Get mattermost matrixbot password
+  password:
+    path: "{{ mattermost_matrixbot_password_path }}"
+  register: mattermost_matrixbot_password
+  no_log: True
+
+- name: Create mattermost matrixbot user if missing
+  become_user: mattermost
+  command: "mattermost user create --email devnull-matrixbot@srcf.net --system_admin true --username matrixbot --password {{ mattermost_matrixbot_password.meta }}"
+  when: '"auth_service" not in matrixbot_user.stdout'
+  no_log: True
+
+- name: Verify mattermost matrixbot user email
+  become_user: mattermost
+  command: "mattermost user verify matrixbot"
+  when: '"auth_service" not in matrixbot_user.stdout'
+
+- name: Create SRCF team
+  become_user: mattermost
+  mattermost_team:
+    username: matrixbot
+    password: "{{ mattermost_matrixbot_password.meta }}"
+    name: srcf
+    display_name: srcf
+    type: O
+  register: team_srcf
+
+- name: Delete off-topic channel
+  become_user: mattermost
+  mattermost_channel:
+    username: matrixbot
+    password: "{{ mattermost_matrixbot_password.meta }}"
+    team_id: "{{ team_srcf.meta.id }}"
+    name: off-topic
+    state: absent
+
+- name: Create channels
+  become_user: mattermost
+  mattermost_channel:
+    username: matrixbot
+    password: "{{ mattermost_matrixbot_password.meta }}"
+    team_id: "{{ team_srcf.meta.id }}"
+    name: "{{ item.name }}"
+    display_name: "{{ item.display_name }}"
+    header: "{{ item.header }}"
+    type: O
+  register: mattermost_channels
+  loop: "{{ matrix_mattermost_bridges }}"

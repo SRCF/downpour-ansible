@@ -5,8 +5,7 @@ After=network.target
 [Service]
 User=matrix-mattermost
 Group=matrix-mattermost
-WorkingDirectory=/home/matrix-mattermost/matrix-appservice-slack
-ExecStart=/usr/bin/npm start -- -c /home/matrix-mattermost/config.yaml -f /home/matrix-mattermost/registration.yaml
+ExecStart=/usr/bin/node /home/matrix-mattermost/lib/build/index.js -f /home/matrix-mattermost/registration/registration.yaml -c /home/matrix-mattermost/config.yaml
 KillMode=mixed
 Restart=on-failure
 

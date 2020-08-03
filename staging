@@ -1,6 +1,5 @@
 all:
   hosts:
     cloudburst.srcf.net:
-      mattermost_domain: mattermost.cloudburst.srcf.net
-      matrix_domain: matrix.cloudburst.srcf.net
+      root_domain: cloudburst.srcf.net
       irc_suffix: -test

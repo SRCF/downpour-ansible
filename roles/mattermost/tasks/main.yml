@@ -5,4 +5,3 @@
 - import_tasks: plugins.yml
 - import_tasks: admin.yml
 - import_tasks: deploy.yml
-- import_tasks: srcf.yml
