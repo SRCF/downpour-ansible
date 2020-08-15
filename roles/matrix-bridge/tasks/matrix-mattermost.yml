@@ -31,4 +31,4 @@
   vars:
     - protocol: mattermost
     - bridge_url: 'https://github.com/dalcde/matrix-appservice-mattermost'
-    - bridge_version: e3633ecb587a38578085ef06ffd9e91db7fe4ce1 # v0.1.0
+    - bridge_version: master
