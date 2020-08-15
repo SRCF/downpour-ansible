@@ -19,6 +19,7 @@
     repo: "{{ bridge_url }}"
     dest: "/home/matrix-{{ protocol }}/lib/"
     version: "{{ bridge_version }}"
+    force: true
   notify:
     - "build matrix-{{ protocol }}"
     - "restart matrix-{{ protocol }}"

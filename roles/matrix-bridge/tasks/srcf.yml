@@ -50,6 +50,6 @@
     name: "{{ item.name }}"
     display_name: "{{ item.display_name }}"
     header: "{{ item.header }}"
-    type: O
+    type: "{{ item.type }}"
   register: mattermost_channels
   loop: "{{ matrix_mattermost_bridges }}"
