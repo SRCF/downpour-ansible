@@ -51,6 +51,7 @@
        - { irc: "#welcome", matrix: "welcome" }
        - { irc: "#society", matrix: "society" }
        - { irc: "#timeout", matrix: "timeout" }
+       - { irc: "#executive", matrix: "executive" }
 
     - matrix_mattermost_bridges:
        - name: "town-square"
@@ -78,6 +79,11 @@
          display_name: "timeout"
          type: "O"
          header: "Timeout is growing -- let's make it happen!"
+       - name: "executive"
+         matrix: "executive"
+         display_name: "executive"
+         type: "P"
+         header: "SRCF Executive"
 
     - matrix_puppeteer_password_path: /root/matrix-puppeteer-password
     - matrix_registration_secret: !vault |
