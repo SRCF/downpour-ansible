@@ -1,7 +1,6 @@
 - name: Install oidentd
   apt:
     package: oidentd
-
 - name: Enable oidentd
   systemd:
     name: oidentd
@@ -61,4 +60,4 @@
   vars:
     - protocol: irc
     - bridge_url: 'https://github.com/matrix-org/matrix-appservice-irc'
-    - bridge_version: 7ba7c2bbf77056fcff44dd29b3144edc0cb531c5
+    - bridge_version: f7db5b1bb6244b979da635b5e999b098d2318817 # 0.20.1

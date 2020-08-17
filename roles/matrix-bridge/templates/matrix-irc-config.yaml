@@ -64,7 +64,7 @@ ircService:
 
       # Configuration for virtual IRC users.
       ircClients:
-        nickTemplate: "$LOCALPART{{ irc_suffix }}"
+        nickTemplate: "$DISPLAY{{ irc_suffix }}"
         allowNickChanges: true
         maxClients: 100
         lineLimit: 5
