@@ -45,16 +45,16 @@
     - restart matrix-mattermost
     - restart matrix-irc
 
-- name: Restart matrix-irc
-  systemd:
-    name: matrix-irc
-    state: restarted
-    daemon_reload: yes
-  listen: restart matrix-irc
-
 - name: Restart matrix-mattermost
   systemd:
     name: matrix-mattermost
     state: restarted
     daemon_reload: yes
   listen: restart matrix-mattermost
+
+- name: Restart matrix-irc
+  systemd:
+    name: matrix-irc
+    state: restarted
+    daemon_reload: yes
+  listen: restart matrix-irc
