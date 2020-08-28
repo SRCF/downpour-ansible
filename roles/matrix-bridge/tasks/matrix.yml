@@ -52,6 +52,12 @@
     groups: matrix-synapse
     append: true
 
+- name: Get matrix registration secret
+  password:
+    path: "{{ matrix_registration_secret_path }}"
+  register: matrix_registration_secret
+  no_log: true
+
 - name: Install matrix config
   template:
     src: homeserver.yaml
@@ -103,7 +109,7 @@
   matrix_user:
     username: puppeteer
     password: "{{ matrix_puppeteer_password.meta }}"
-    shared_secret: "{{ matrix_registration_secret }}"
+    shared_secret: "{{ matrix_registration_secret.meta }}"
 
 - name: Copy matrix nginx config
   template:

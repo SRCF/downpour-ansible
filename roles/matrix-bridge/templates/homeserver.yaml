@@ -45,7 +45,7 @@ log_config: "/etc/matrix-synapse/log.yaml"
 media_store_path: "/mnt/matrix-synapse/media"
 enable_registration: false
 
-registration_shared_secret: {{ matrix_registration_secret }}
+registration_shared_secret: {{ matrix_registration_secret.meta }}
 default_identity_server: https://{{ domain }}
 
 signing_key_path: "/etc/matrix-synapse/homeserver.signing.key"
