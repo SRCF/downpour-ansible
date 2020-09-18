@@ -2,7 +2,8 @@
 - name: Install dependencies
   apt:
     package:
-      - nginx-extras
+      - nginx
+      - libnginx-mod-http-lua
       - postgresql
       - postgresql-contrib
       - python3-psycopg2 # Used by ansible
