@@ -16,7 +16,7 @@ mappings:
     {% endfor %}
 
 matrix_localpart_prefix: 'mm_'
-matrix_display_name_template: '[mm] [DISPLAY]'
+matrix_display_name_template: '[mm] [USERNAME]'
 matrix_bot:
     username: 'matterbot'
     display_name: 'Mattermost Bridge'
