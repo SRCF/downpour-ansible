@@ -52,6 +52,7 @@
        - { irc: "#society", matrix: "society" }
        - { irc: "#timeout", matrix: "timeout" }
        - { irc: "#executive", matrix: "executive" }
+       - { irc: "#ops", matrix: "ops" }
 
     - matrix_mattermost_bridges:
        - name: "town-square"
@@ -84,6 +85,11 @@
          display_name: "executive"
          type: "P"
          header: "SRCF Executive"
+       - name: "ops"
+         matrix: "ops"
+         display_name: "ops"
+         type: "P"
+         header: "SRCF sysadmin chat. Everything is fine."
 
     - matrix_puppeteer_password_path: /root/matrix-puppeteer-password
     - matrix_registration_secret_path: /root/matrix-registration-secret
