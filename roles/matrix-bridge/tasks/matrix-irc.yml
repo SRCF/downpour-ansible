@@ -60,4 +60,4 @@
   vars:
     - protocol: irc
     - bridge_url: 'https://github.com/matrix-org/matrix-appservice-irc'
-    - bridge_version: 2bfa3aee9a669592be908c39c8bec093e699fbce # 0.21.0
+    - bridge_version: 6a36187aeba24de13849b02b07f299403453c1b1 # 0.22.0
