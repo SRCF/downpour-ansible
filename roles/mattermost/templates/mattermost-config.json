@@ -75,12 +75,11 @@
         "ExperimentalEnableDefaultChannelLeaveJoinMessages": true,
         "ExperimentalGroupUnreadChannels": "disabled",
         "ExperimentalChannelOrganization": false,
-        "ExperimentalChannelSidebarOrganization": "disabled",
-        "ExperimentalDataPrefetch": true,
         "ImageProxyType": "",
         "ImageProxyURL": "",
         "ImageProxyOptions": "",
         "EnableAPITeamDeletion": false,
+        "EnableAPIUserDeletion": false,
         "ExperimentalEnableHardenedMode": false,
         "DisableLegacyMFA": true,
         "ExperimentalStrictCSRFEnforcement": false,
@@ -89,8 +88,17 @@
         "EnableBotAccountCreation": true,
         "EnableSVGs": true,
         "EnableLatex": true,
+        "EnableAPIChannelDeletion": false,
         "EnableLocalMode": false,
-        "LocalModeSocketLocation": "/var/tmp/mattermost_local.socket"
+        "LocalModeSocketLocation": "/var/tmp/mattermost_local.socket",
+        "EnableAWSMetering": false,
+        "SplitKey": "",
+        "FeatureFlagSyncIntervalSeconds": 30,
+        "DebugSplit": false,
+        "ThreadAutoFollow": true,
+        "CollapsedThreads": "disabled",
+        "ManagedResourcePaths": "",
+        "EnableLegacySidebar": false
     },
     "TeamSettings": {
         "SiteName": "SRCF Mattermost",
@@ -161,20 +169,14 @@
         "AdvancedLoggingConfig": ""
     },
     "ExperimentalAuditSettings": {
-        "SysLogEnabled": false,
-        "SysLogIP": "localhost",
-        "SysLogPort": 6514,
-        "SysLogTag": "",
-        "SysLogCert": "",
-        "SysLogInsecure": false,
-        "SysLogMaxQueueSize": 1000,
         "FileEnabled": false,
         "FileName": "",
         "FileMaxSizeMB": 100,
         "FileMaxAgeDays": 0,
         "FileMaxBackups": 0,
         "FileCompress": false,
-        "FileMaxQueueSize": 1000
+        "FileMaxQueueSize": 1000,
+        "AdvancedLoggingConfig": ""
     },
     "NotificationLogSettings": {
         "EnableConsole": true,
@@ -183,7 +185,8 @@
         "EnableFile": false,
         "FileLevel": "INFO",
         "FileJson": true,
-        "FileLocation": ""
+        "FileLocation": "",
+        "AdvancedLoggingConfig": ""
     },
     "PasswordSettings": {
         "MinimumLength": 5,
@@ -248,7 +251,7 @@
     "RateLimitSettings": {
         "Enable": false,
         "PerSec": 10,
-        "MaxBurst": 100,
+        "MaxBurst": 1000,
         "MemoryStoreSize": 10000,
         "VaryByRemoteAddr": true,
         "VaryByUser": false,
@@ -274,7 +277,12 @@
         "BannerText": "",
         "BannerColor": "#f2a93b",
         "BannerTextColor": "#333333",
-        "AllowBannerDismissal": true
+        "AllowBannerDismissal": true,
+        "AdminNoticesEnabled": true,
+        "UserNoticesEnabled": true,
+        "NoticesURL": "https://notices.mattermost.com/",
+        "NoticesFetchFrequency": 3600,
+        "NoticesSkipCache": false
     },
     "ThemeSettings": {
         "EnableThemeSelection": true,
@@ -289,7 +297,10 @@
         "Scope": "",
         "AuthEndpoint": "",
         "TokenEndpoint": "",
-        "UserApiEndpoint": ""
+        "UserApiEndpoint": "",
+        "DiscoveryEndpoint": "",
+        "ButtonText": "",
+        "ButtonColor": ""
     },
     "GoogleSettings": {
         "Enable": false,
@@ -298,7 +309,10 @@
         "Scope": "profile email",
         "AuthEndpoint": "https://accounts.google.com/o/oauth2/v2/auth",
         "TokenEndpoint": "https://www.googleapis.com/oauth2/v4/token",
-        "UserApiEndpoint": "https://people.googleapis.com/v1/people/me?personFields=names,emailAddresses,nicknames,metadata"
+        "UserApiEndpoint": "https://people.googleapis.com/v1/people/me?personFields=names,emailAddresses,nicknames,metadata",
+        "DiscoveryEndpoint": "",
+        "ButtonText": "",
+        "ButtonColor": ""
     },
     "Office365Settings": {
         "Enable": false,
@@ -308,7 +322,20 @@
         "AuthEndpoint": "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
         "TokenEndpoint": "https://login.microsoftonline.com/common/oauth2/v2.0/token",
         "UserApiEndpoint": "https://graph.microsoft.com/v1.0/me",
+        "DiscoveryEndpoint": "",
         "DirectoryId": ""
+    },
+    "OpenIdSettings": {
+        "Enable": false,
+        "Secret": "",
+        "Id": "",
+        "Scope": "profile openid email",
+        "AuthEndpoint": "",
+        "TokenEndpoint": "",
+        "UserApiEndpoint": "",
+        "DiscoveryEndpoint": "",
+        "ButtonText": "",
+        "ButtonColor": "#145DBF"
     },
     "LdapSettings": {
         "Enable": false,
@@ -337,6 +364,8 @@
         "PictureAttribute": "",
         "SyncIntervalMinutes": 60,
         "SkipCertificateVerification": false,
+        "PublicCertificateFile": "",
+        "PrivateKeyFile": "",
         "QueryTimeout": 60,
         "MaxPageSize": 0,
         "LoginFieldName": "",
@@ -359,6 +388,7 @@
         "Enable": false,
         "EnableSyncWithLdap": false,
         "EnableSyncWithLdapIncludeAuth": false,
+        "IgnoreGuestsLdapSync": false,
         "Verify": true,
         "Encrypt": true,
         "SignRequest": false,
@@ -391,6 +421,10 @@
         "LoginButtonTextColor": "#ffffff"
     },
     "NativeAppSettings": {
+        "AppCustomURLSchemes": [
+            "mmauth://",
+            "mmauthbeta://"
+        ],
         "AppDownloadLink": "https://mattermost.com/download/#mattermostApps",
         "AndroidAppDownloadLink": "https://about.mattermost.com/mattermost-android-app/",
         "IosAppDownloadLink": "https://about.mattermost.com/mattermost-ios-app/"
@@ -423,7 +457,10 @@
         "EnableClickToReply": false,
         "LinkMetadataTimeoutMilliseconds": 5000,
         "RestrictSystemAdmin": false,
-        "UseNewSAMLLibrary": false
+        "UseNewSAMLLibrary": false,
+        "CloudUserLimit": 0,
+        "CloudBilling": false,
+        "EnableSharedChannels": false
     },
     "AnalyticsSettings": {
         "MaxUsersForStatistics": 10000
@@ -471,6 +508,7 @@
         "DailyRunTime": "01:00",
         "ExportFromTimestamp": 0,
         "BatchSize": 10000,
+        "DownloadExportResults": false,
         "GlobalRelaySettings": {
             "CustomerType": "A9",
             "SmtpUsername": "",
@@ -529,5 +567,12 @@
         "ImageProxyType": "local",
         "RemoteImageProxyURL": "",
         "RemoteImageProxyOptions": ""
+    },
+    "CloudSettings": {
+        "CWSUrl": "https://customers.mattermost.com"
+    },
+    "ImportSettings": {
+        "Directory": "./import",
+        "RetentionDays": 30
     }
 }
