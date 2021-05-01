@@ -7,8 +7,8 @@
   vars:
     - domain: "mattermost.{{ root_domain }}"
     - certbot_email: soc-srcf-admin@lists.cam.ac.uk
-    - mattermost_version: 5.33.1
-    - mattermost_checksum: sha256:3e86f0498192b1320f021f4714b63b087aa18ed674893f2b0320f1ba9582dd5f  -
+    - mattermost_version: 5.34.2
+    - mattermost_checksum: sha256:7346b4ac5132c69c677b4f738a18c6d0969ad4ae466f29d6f02b361878801ec6  -
     - mattermost_admin_password_path: /root/mattermost-admin-password
     - mattermost_public_link_salt_path: /root/mattermost-public-link-salt
 
