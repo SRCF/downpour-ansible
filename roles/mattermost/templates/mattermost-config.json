@@ -528,16 +528,8 @@
         "EnableHealthCheck": true,
         "Directory": "./plugins",
         "ClientDirectory": "./client/plugins",
-        "Plugins": {
-            "bigbluebutton": {
-                "base_url": "https://gateway.timeout.srcf.net/bigbluebutton/api",
-                "salt": "{{ bbb_secret }}"
-            }
-        },
+        "Plugins": {},
         "PluginStates": {
-            "bigbluebutton": {
-                "Enable": true
-            },
             "com.mattermost.nps": {
                 "Enable": false
             },

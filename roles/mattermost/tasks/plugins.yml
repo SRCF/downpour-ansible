@@ -8,13 +8,6 @@
 
 - import_tasks: install_plugin.yml
   vars:
-    - plugin_name: "bigbluebutton"
-    - plugin_url: "https://github.com/blindsidenetworks/mattermost-plugin-bigbluebutton/releases/download/v{{ mattermost_bbb_plugin_version }}/bigbluebutton_linux_amd64.tar.gz"
-    - plugin_version: "{{ mattermost_bbb_plugin_version }}"
-    - plugin_checksum: "{{ mattermost_bbb_plugin_checksum }}"
-
-- import_tasks: install_plugin.yml
-  vars:
     - plugin_name: "srcf.redact"
     - plugin_url: "https://github.com/SRCF/mattermost-plugin-redact/releases/download/1.1.1/srcf.redact-1.1.1-linux-amd64.tar.gz"
     - plugin_version: "1.1.1"
