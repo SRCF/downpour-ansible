@@ -41,6 +41,31 @@ database:
     cp_min: 5
     cp_max: 10
 
+
+rc_registration:
+  per_second: 100
+  burst_count: 100
+
+rc_message:
+  per_second: 100
+  burst_count: 100
+
+rc_login:
+  address:
+    per_second: 100
+    burst_count: 100
+  account:
+    per_second: 100
+    burst_count: 100
+
+rc_invites:
+  per_room:
+    per_second: 100
+    burst_count: 100
+  per_user:
+    per_second: 100
+    burst_count: 100
+
 log_config: "/etc/matrix-synapse/log.yaml"
 media_store_path: "/mnt/matrix-synapse/media"
 enable_registration: false

@@ -13,7 +13,7 @@
 - name: Install matrix
   apt:
     package:
-      - matrix-synapse
+      - matrix-synapse-py3
       - nginx
       - postgresql
       - python3-pip
