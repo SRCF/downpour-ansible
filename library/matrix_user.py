@@ -17,6 +17,8 @@ def main():
     domain = module.params['domain']
 
     if module.params['shared_secret']:
+        import sys
+        sys.path.append("/opt/venvs/matrix-synapse/lib/python3.8/site-packages")
         from synapse._scripts.register_new_matrix_user import request_registration
         res = request_registration(
                 username,
